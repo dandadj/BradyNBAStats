@@ -2,7 +2,7 @@ import urllib2
 import re
 from bs4 import BeautifulSoup
 
-## Contants
+## Constants
 #B_R stands for Basketball-Reference.com
 B_R_PAGE = "http://www.basketball-reference.com/"
 B_R_PLAYERS_PAGE = B_R_PAGE + "players/"
@@ -37,9 +37,45 @@ def GetBRPlayers():
             player_info['weight'] = cells[5].text
             player_info['birthdate'] = cells[6].text
             player_info['college'] = cells[7].text
-            print player_info['name']
+            player_info['hall_of_fame'] = hall_of_fame
             all_players.append(player_info)
     return all_players
 
+def TableToDictionary(table):
+    headers = table.find_all('th')
+    headers_text = []
+    for header in headers:
+        headers_text.append(header.text)
+    rows = table.find_all('tr')
+    entire_table = []
+    for row in rows:
+        cells = row.find_all('td')
+        cells_text = []
+        for cell in cells:
+            cells_text.append(cell.text)
+        stats = dict(zip(headers_text, cells_text))
+        entire_table.append(stats)
+    return entire_table
 
-GetBRPlayers()
+def GetTables(url):
+    all_tables_as_dictionaries = []
+    page = urllib2.urlopen(url)
+    soup = BeautifulSoup(page)
+    tables = soup.find_all("div", { "class" : "table_container" })
+    for table in tables:
+        all_tables_as_dictionaries.append(TableToDictionary(table))
+    return all_tables_as_dictionaries[0]
+
+
+
+
+
+
+    
+
+
+
+if __name__ == "__main__":
+    # print GetBRPlayers()
+    print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
+
