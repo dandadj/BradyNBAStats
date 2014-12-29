@@ -52,7 +52,9 @@ def TableToDictionary(table):
         cells = row.find_all('td')
         cells_text = []
         for cell in cells:
-            cells_text.append(cell.text)
+            text = cell.text
+            text = text.replace(u'\xa0\u2605', u'')
+            cells_text.append(text)
         stats = dict(zip(headers_text, cells_text))
         entire_table.append(stats)
     return entire_table
