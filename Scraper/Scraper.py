@@ -1,6 +1,7 @@
 import urllib2
 import re
 from bs4 import BeautifulSoup
+from NBADatabase import *
 
 ## Constants
 #B_R stands for Basketball-Reference.com
@@ -24,20 +25,20 @@ def GetBRPlayers():
             cells = row.find_all('td')
             if len(cells) != 8:
                 continue
-            player_info['page'] = cells[0].a['href']
-            player_info['name'] = cells[0].text
+            player_info['Page'] = cells[0].a['href']
+            player_info['Name'] = cells[0].text
             hall_of_fame = False
-            if '*' in player_info['name']:
+            if '*' in player_info['Name']:
                 hall_of_fame = True
-                player_info['name'] = player_info['name'].replace("*","")
-            player_info['from'] = int(cells[1].text)
-            player_info['to'] = int(cells[2].text)
-            player_info['position'] = cells[3].text
-            player_info['height'] = cells[4].text
-            player_info['weight'] = cells[5].text
-            player_info['birthdate'] = cells[6].text
-            player_info['college'] = cells[7].text
-            player_info['hall_of_fame'] = hall_of_fame
+                player_info['Name'] = player_info['Name'].replace("*","")
+            player_info['FromYear'] = int(cells[1].text)
+            player_info['ToYear'] = int(cells[2].text)
+            player_info['Position'] = cells[3].text
+            player_info['Height'] = cells[4].text
+            player_info['Weight'] = cells[5].text
+            player_info['Birthdate'] = cells[6].text
+            player_info['College'] = cells[7].text
+            player_info['HallOfFame'] = hall_of_fame
             all_players.append(player_info)
     return all_players
 
@@ -70,14 +71,9 @@ def GetTables(url):
 
 
 
-
-
-
-    
-
-
-
 if __name__ == "__main__":
-    # print GetBRPlayers()
-    print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
+    #players = GetBRPlayers()
+    #print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
+    #print "creating db table"
+    #CreatePlayersDB(players)
 
