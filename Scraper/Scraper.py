@@ -66,7 +66,18 @@ def GetTables(url):
     tables = soup.find_all("div", { "class" : "table_container" })
     for table in tables:
         all_tables_as_dictionaries.append(TableToDictionary(table))
-    return all_tables_as_dictionaries[0]
+    return all_tables_as_dictionaries
+
+def GetAllPlayersStats():
+    all_players = GetBRPlayers()
+    all_links = []
+    all_players_stats = []
+    for player in all_players:
+        all_links.append(B_R_PAGE + player['page'][1:])
+    for link in all_links:
+        all_players_stats.append(GetTables(link))
+    return all_players_stats
+
 
 
 
@@ -79,5 +90,5 @@ def GetTables(url):
 
 if __name__ == "__main__":
     # print GetBRPlayers()
-    print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
-
+    # print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
+    print GetAllPlayersStats()
