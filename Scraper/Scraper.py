@@ -2,6 +2,7 @@ import urllib2
 import re
 from bs4 import BeautifulSoup
 from NBADatabase import *
+from PlayerMongo import *
 
 ## Constants
 #B_R stands for Basketball-Reference.com
@@ -83,7 +84,8 @@ def GetAllPlayersStats():
 
 
 if __name__ == "__main__":
-    #players = GetBRPlayers()
+    players = GetBRPlayers()
     #print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
     #print "creating db table"
     #CreatePlayersDB(players)
+    CreatePlayersMongo(players)
