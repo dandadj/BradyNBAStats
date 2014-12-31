@@ -3,6 +3,8 @@ import re
 from bs4 import BeautifulSoup
 from NBADatabase import *
 from PlayerMongo import *
+import pymongo
+import sys
 
 ## Constants
 #B_R stands for Basketball-Reference.com
@@ -48,7 +50,7 @@ def TableToDictionary(table):
     headers_text = []
     for header in headers:
         headers_text.append(header.text)
-    rows = table.find_all('tr')
+    rows = table.find_all('tr', 'full_table')
     entire_table = []
     for row in rows:
         cells = row.find_all('td')
@@ -62,13 +64,13 @@ def TableToDictionary(table):
     return entire_table
 
 def GetTables(url):
-    all_tables_as_dictionaries = []
+    all_tables = {}
     page = urllib2.urlopen(url)
     soup = BeautifulSoup(page)
-    tables = soup.find_all("div", { "class" : "table_container" })
+    tables = soup.find_all("table", { "class" : "sortable row_summable stats_table" })
     for table in tables:
-        all_tables_as_dictionaries.append(TableToDictionary(table))
-    return all_tables_as_dictionaries
+        all_tables[table['id']] = TableToDictionary(table)
+    return all_tables
 
 def GetAllPlayersStats():
     all_players = GetBRPlayers()
@@ -80,12 +82,33 @@ def GetAllPlayersStats():
         all_players_stats.append(GetTables(link))
     return all_players_stats
 
+def GetPlayerTotals():
+    client = MongoClient()
+    db = client['NBAStats']
+    players = db['players']
+    season_stats = db['season_stats']
+    all_players = players.find()
+    for player in all_players:
+        player_id = player['_id']
+        end_of_url = player['Page']
+        url = B_R_PAGE + end_of_url[1:]
+        tables = GetTables(url)
+        totals = tables['totals']
+        for row in totals:
+            row['player_id'] = player_id
+            season_stats.insert(row)
+        print player['Name']
+        
+
+
+
 
 
 
 if __name__ == "__main__":
-    players = GetBRPlayers()
-    #print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
+    # players = GetBRPlayers()
+    # print GetTables("http://www.basketball-reference.com/players/d/duncati01.html")
     #print "creating db table"
     #CreatePlayersDB(players)
-    CreatePlayersMongo(players)
+    # CreatePlayersMongo(players)
+    print GetPlayerTotals()

@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 def CreatePlayersMongo(playersList):
     client = MongoClient()
-    db = client['NBAPlayers']
+    db = client['NBAStats']
     players = db['players']
     for player in playersList:
         players.insert(player)
